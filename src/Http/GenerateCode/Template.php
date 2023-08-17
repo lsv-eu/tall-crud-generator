@@ -33,8 +33,8 @@ EOT;
     {
         return <<<'EOT'
 x-data="{
-    selectedColumns: @entangle('selectedColumns').defer,
-    columns: @entangle('columns').defer,
+    selectedColumns: @entangle('selectedColumns'),
+    columns: @entangle('columns'),
     hasColumn(column) {
         var columns = this.selectedColumns;
         var column = columns.find(e => {
@@ -58,7 +58,7 @@ EOT;
     {
         return <<<'EOT'
 
-                        <button type="submit" wire:click="$emitTo('##COMPONENT_NAME##', 'showDeleteForm', {{ $result->##PRIMARY_KEY##}});" class="text-red-500">
+                        <button type="submit" wire:click="$dispatchTo('##COMPONENT_NAME##', 'showDeleteForm', {id:'{{ $result->##PRIMARY_KEY##}}'});" class="text-red-500">
                             <x-tall-crud-icon-delete />
                         </button>
 EOT;
@@ -68,7 +68,7 @@ EOT;
     {
         return <<<'EOT'
 
-        <button type="submit" wire:click="$emitTo('##COMPONENT_NAME##', 'showCreateForm');" class="text-blue-500">
+        <button type="submit" wire:click="$dispatchTo('##COMPONENT_NAME##', 'showCreateForm');" class="text-blue-500">
             <x-tall-crud-icon-add />
         </button>
 EOT;
@@ -78,7 +78,7 @@ EOT;
     {
         return <<<'EOT'
 
-                        <button type="submit" wire:click="$emitTo('##COMPONENT_NAME##', 'showEditForm', {{ $result->##PRIMARY_KEY##}});" class="text-green-500">
+                        <button type="submit" wire:click="$dispatchTo('##COMPONENT_NAME##', 'showEditForm', {id:'{{ $result->##PRIMARY_KEY##}}'});" class="text-green-500">
                             <x-tall-crud-icon-edit />
                         </button>
 EOT;
@@ -101,7 +101,7 @@ EOT;
         $this->confirmingItemDeletion = false;
         $this->primaryKey = '';
         $this->reset(['item']);
-        $this->emitTo('##COMPONENT_NAME##', 'refresh');##FLASH_MESSAGE##
+        $this->dispatchTo('##COMPONENT_NAME##', 'refresh');##FLASH_MESSAGE##
     }
 
 EOT;
@@ -124,7 +124,7 @@ EOT;
         $item = ##MODEL##::create([##CREATE_FIELDS####BELONGS_TO_SAVE##
         ]);##BTM_ATTACH##
         $this->confirmingItemCreation = false;
-        $this->emitTo('##COMPONENT_NAME##', 'refresh');##FLASH_MESSAGE##
+        $this->dispatchTo('##COMPONENT_NAME##', 'refresh');##FLASH_MESSAGE##
     }
 
 EOT;
@@ -154,7 +154,7 @@ EOT;
         $this->item->save();##BTM_UPDATE##
         $this->confirmingItemEdit = false;
         $this->primaryKey = '';
-        $this->emitTo('##COMPONENT_NAME##', 'refresh');##FLASH_MESSAGE##
+        $this->dispatchTo('##COMPONENT_NAME##', 'refresh');##FLASH_MESSAGE##
     }
 
 EOT;
@@ -374,7 +374,7 @@ EOT;
     {
         return <<<'EOT'
 
-    <x-tall-crud-confirmation-dialog wire:model="confirmingItemDeletion">
+    <x-tall-crud-confirmation-dialog wire:model.live="confirmingItemDeletion">
         <x-slot name="title">
             Delete Record
         </x-slot>
@@ -396,7 +396,7 @@ EOT;
     {
         return <<<'EOT'
 
-    <x-tall-crud-dialog-modal wire:model="confirmingItemCreation">
+    <x-tall-crud-dialog-modal wire:model.live="confirmingItemCreation">
         <x-slot name="title">
             Add Record
         </x-slot>
@@ -417,7 +417,7 @@ EOT;
     {
         return <<<'EOT'
 
-    <x-tall-crud-dialog-modal wire:model="confirmingItemEdit">
+    <x-tall-crud-dialog-modal wire:model.live="confirmingItemEdit">
         <x-slot name="title">
             Edit Record
         </x-slot>
@@ -439,7 +439,7 @@ EOT;
 
             <div class="mt-4">
                 <x-tall-crud-label>##LABEL##</x-tall-crud-label>
-                <x-tall-crud-input class="block mt-1 w-1/2" type="text" wire:model.defer="item.##COLUMN##" />
+                <x-tall-crud-input class="block mt-1 w-1/2" type="text" wire:model="item.##COLUMN##" />
                 @error('item.##COLUMN##') <x-tall-crud-error-message>{{$message}}</x-tall-crud-error-message> @enderror
             </div>
 EOT;
@@ -451,7 +451,7 @@ EOT;
 
             <div class="mt-4">
                 <x-tall-crud-label>##LABEL##</x-tall-crud-label>
-                <x-tall-crud-select class="block mt-1 w-1/4" wire:model.defer="item.##COLUMN##">##OPTIONS##
+                <x-tall-crud-select class="block mt-1 w-1/4" wire:model="item.##COLUMN##">##OPTIONS##
                 </x-tall-crud-select> 
                 @error('item.##COLUMN##') <x-tall-crud-error-message>{{$message}}</x-tall-crud-error-message> @enderror
             </div>
@@ -463,7 +463,7 @@ EOT;
         return <<<'EOT'
 
             <x-tall-crud-checkbox-wrapper class="mt-4">
-                <x-tall-crud-label>##LABEL##:</x-tall-crud-label><x-tall-crud-checkbox class="ml-2" wire:model.defer="item.##COLUMN##" />
+                <x-tall-crud-label>##LABEL##:</x-tall-crud-label><x-tall-crud-checkbox class="ml-2" wire:model="item.##COLUMN##" />
             </x-tall-crud-checkbox-wrapper>
             @error('item.##COLUMN##') <x-tall-crud-error-message>{{$message}}</x-tall-crud-error-message> @enderror
 EOT;
@@ -473,7 +473,7 @@ EOT;
     {
         return <<<'EOT'
 
-        $this->emitTo('livewire-toast', 'show', '##MESSAGE##');
+        $this->dispatchTo('livewire-toast', 'show', {message:'##MESSAGE##'});
 EOT;
     }
 
@@ -583,7 +583,7 @@ EOT;
                 @foreach( $##RELATION## as $c)
                 <x-tall-crud-checkbox-wrapper class="mt-4">
                     <x-tall-crud-label>{{$c->##DISPLAY_COLUMN##}}</x-tall-crud-label>
-                    <x-tall-crud-checkbox value="{{ $c->##RELATED_KEY## }}" class="ml-2" wire:model.defer="##FIELD_NAME##" />
+                    <x-tall-crud-checkbox value="{{ $c->##RELATED_KEY## }}" class="ml-2" wire:model="##FIELD_NAME##" />
                 </x-tall-crud-checkbox-wrapper>
                 @endforeach
             </div>
@@ -596,7 +596,7 @@ EOT;
 
 
             <h2 class="mt-4">##HEADING##</h2>
-            <x-tall-crud-select multiple="multiple" wire:model.defer="##FIELD_NAME##">
+            <x-tall-crud-select multiple="multiple" wire:model="##FIELD_NAME##">
             @foreach( $##RELATION## as $c)
                 <option value="{{ $c->##RELATED_KEY## }}">{{$c->##DISPLAY_COLUMN##}}</option>
             @endforeach
@@ -612,7 +612,7 @@ EOT;
             <div class="grid grid-cols-3">
                 <div class="mt-4">
                     <x-tall-crud-label>##LABEL##</x-tall-crud-label>
-                    <x-tall-crud-select class="block mt-1 w-full" wire:model.defer="item.##FOREIGN_KEY##">
+                    <x-tall-crud-select class="block mt-1 w-full" wire:model="item.##FOREIGN_KEY##">
                         <option value="">Please Select</option>
                         @foreach($##BELONGS_TO_VAR## as $c)
                         <option value="{{$c->##OWNER_KEY##}}">{{$c->##DISPLAY_COLUMN##}}</option>
@@ -706,9 +706,9 @@ EOT;
         if (!empty($this->selectedItems)) {
             ##MODEL##::whereIn('##PRIMARY_KEY##', $this->selectedItems)->update(['##COLUMN##' => $status]);
             $this->selectedItems = [];
-            $this->emitTo('livewire-toast', 'show', 'Records Updated Successfully.');
+            $this->dispatchTo('livewire-toast', 'show', {message:'Records Updated Successfully.'});
         } else {
-            $this->emitTo('livewire-toast', 'showWarning', 'Please select some Records.');
+            $this->dispatchTo('livewire-toast', 'showWarning', {message:'Please select some Records.'});
         }
     }
 EOT;
@@ -734,7 +734,7 @@ EOT;
     {
         return <<<'EOT'
 
-                        <x-tall-crud-checkbox class="mr-2 leading-tight" value="{{$result->##PRIMARY_KEY##}}" wire:model.defer="selectedItems" />
+                        <x-tall-crud-checkbox class="mr-2 leading-tight" value="{{$result->##PRIMARY_KEY##}}" wire:model="selectedItems" />
 
 EOT;
     }
