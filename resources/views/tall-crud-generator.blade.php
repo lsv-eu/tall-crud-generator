@@ -14,13 +14,6 @@
     <!-- Styles -->
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://unpkg.com/@tailwindcss/forms@0.2.1/dist/forms.min.css" rel="stylesheet">
-
-    @livewireStyles
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
-
-
 </head>
 
 <body class="font-sans antialiased">
@@ -42,7 +35,6 @@
         </main>
     </div>
 
-    @livewireScripts
 </body>
 
 </html>
